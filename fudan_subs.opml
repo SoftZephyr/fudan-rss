@@ -9,14 +9,14 @@
         type="rss" 
         text="复旦教务处 - 工作动态" 
         title="复旦教务处 - 工作动态" 
-        xmlUrl="https://[你的用户名].github.io/[仓库名]/fudan_jwc.xml" 
+        xmlUrl="https://SoftZephyr.github.io/fudan-rss/fudan_jwc.xml" 
         htmlUrl="https://jwc.fudan.edu.cn/9397/list.htm"/>
       
       <outline 
         type="rss" 
         text="复旦经院 - 通知公告" 
         title="复旦经院 - 通知公告" 
-        xmlUrl="https://[你的用户名].github.io/[仓库名]/fudan_econ.xml" 
+        xmlUrl="https://SoftZephyr.github.io/fudan-rss/fudan_econ.xml" 
         htmlUrl="https://econ.fudan.edu.cn/xwzx/tzgg.htm"/>
     </outline>
   </body>
