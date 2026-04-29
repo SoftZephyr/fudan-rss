@@ -1,12 +1,15 @@
 name: Update Fudan RSS Feeds
 
 on:
+  # 定时触发：北京时间每天上午 08:00 (UTC 00:00)
   schedule:
-    - cron: '0 0 * * *'  # 北京时间每天上午 8 点
-  workflow_dispatch:      # 允许手动点击运行
+    - cron: '0 0 * * *'
+  
+  # 手动触发：允许在 Actions 页面点击 "Run workflow" 手动运行
+  workflow_dispatch:
 
 permissions:
-  contents: write         # 必须：赋予写入权限以覆盖文件
+  contents: write
 
 jobs:
   update_rss:
@@ -16,7 +19,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0    # 获取全部历史，确保推送顺畅
+        fetch-depth: 0    # 获取完整历史，防止推送冲突
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -27,27 +30,27 @@ jobs:
       run: |
         pip install requests beautifulsoup4 feedgen
 
-    - name: Run Scraper Scripts
+    - name: Sync and Run Scripts
       run: |
-        python jwc_rss.py
-        python econ_rss.py
-
-    - name: Commit and Push changes
-      run: |
+        # 1. 配置 Git 身份
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         
-        # 1. 先尝试同步远程仓库，防止推送冲突
+        # 2. 在运行脚本前先拉取远程更新，确保工作区是“干净”且最新的
         git pull origin main --rebase
         
-        # 2. 强制添加生成的 XML 文件（这将覆盖本地索引中的旧版）
+        # 3. 运行 Python 脚本生成新的 XML 文件（直接覆盖本地旧文件）
+        python fudan_jwc.py
+        python econ_rss.py
+        
+        # 4. 将生成的两个 XML 文件加入暂存区
         git add fudan_jwc.xml fudan_econ.xml
         
-        # 3. 检查是否有变化
+        # 5. 检查是否有实质性的内容更新
         if git diff --staged --quiet; then
-          echo "内容未发生变化，无需更新。"
+          echo "检测到内容与上次一致，无需更新仓库。"
         else
-          # 4. 提交并推送到 main 分支
-          git commit -m "Auto-update RSS feeds (forced override): $(date +'%Y-%m-%d %H:%M:%S')"
+          # 6. 提交并推送，彻底覆盖远程版本
+          git commit -m "Auto-update RSS feeds: $(date +'%Y-%m-%d %H:%M:%S')"
           git push origin main
         fi
