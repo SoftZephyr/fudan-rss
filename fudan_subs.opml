@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>我的复旦订阅列表</title>
+  </head>
+  <body>
+    <outline 
+      text="复旦教务处工作动态" 
+      title="复旦教务处工作动态" 
+      type="rss" 
+      xmlUrl="https://raw.githubusercontent.com/SoftZephyr/fudan-rss/main/fudan_jwc.xml" 
+      htmlUrl="https://jwc.fudan.edu.cn/gzdt/list.htm"/>
+  </body>
+</opml>
