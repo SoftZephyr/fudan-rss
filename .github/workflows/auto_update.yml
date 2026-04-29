@@ -40,7 +40,7 @@ jobs:
         git pull origin main --rebase
         
         # 3. 运行 Python 脚本生成新的 XML 文件（直接覆盖本地旧文件）
-        python fudan_jwc.py
+        python jwc_rss.py
         python econ_rss.py
         
         # 4. 将生成的两个 XML 文件加入暂存区
