@@ -2,32 +2,45 @@ name: Update Fudan JWC RSS
 
 on:
   schedule:
-    - cron: '0 22 * * *' # 每天北京时间早上 6 点运行 (UTC 时间 22:00)
-  workflow_dispatch: # 允许你手动点击运行
+    - cron: '0 0 * * *' # 每天北京时间上午 8:00 (UTC 0:00)
+  workflow_dispatch:    # 允许手动触发调试
+
+permissions:
+  contents: write       # 【关键】必须赋予写权限才能覆盖文件
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: 检出代码
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0   # 获取完整历史，防止推送失败
 
-      - name: 设置 Python 环境
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
 
-      - name: 安装依赖库
-        run: |
-          pip install requests beautifulsoup4 feedgen
+    - name: Install dependencies
+      run: |
+        pip install requests beautifulsoup4 feedgen
 
-      - name: 运行爬虫脚本
-        run: python fudan_rss.py
+    - name: Run Python script
+      run: python your_script_name.py  # 请确保这里是你 Python 脚本的文件名
 
-      - name: 将生成的 RSS 文件提交到仓库
-        run: |
-          git config --global user.name "GitHub Action"
-          git config --global user.email "action@github.com"
-          git add fudan_jwc.xml
-          git commit -m "自动更新 RSS: $(date)" || exit 0
-          git push
+    - name: Commit and Push changes
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        
+        # 检查文件是否有变化
+        git add fudan_jwc.xml
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          # 如果有变化，则提交并覆盖
+          git commit -m "Update RSS: $(date +'%Y-%m-%d %H:%M:%S')"
+          git push origin main
+        fi
