@@ -28,7 +28,7 @@ jobs:
         pip install requests beautifulsoup4 feedgen
 
     - name: Run Python script
-      run: python your_script_name.py  # 请确保这里是你 Python 脚本的文件名
+      run: python fudan_rss.py  # 请确保这里是你 Python 脚本的文件名
 
     - name: Commit and Push changes
       run: |
