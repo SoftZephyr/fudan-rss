@@ -1,0 +1,33 @@
+name: Update Fudan JWC RSS
+
+on:
+  schedule:
+    - cron: '0 22 * * *' # 每天北京时间早上 6 点运行 (UTC 时间 22:00)
+  workflow_dispatch: # 允许你手动点击运行
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v3
+
+      - name: 设置 Python 环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: 安装依赖库
+        run: |
+          pip install requests beautifulsoup4 feedgen
+
+      - name: 运行爬虫脚本
+        run: python fudan_rss.py
+
+      - name: 将生成的 RSS 文件提交到仓库
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add fudan_jwc.xml
+          git commit -m "自动更新 RSS: $(date)" || exit 0
+          git push
