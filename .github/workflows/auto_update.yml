@@ -1,22 +1,22 @@
-name: Update Fudan JWC RSS
+name: Update Fudan RSS Feeds
 
 on:
   schedule:
-    - cron: '0 0 * * *' # 每天北京时间上午 8:00 (UTC 0:00)
-  workflow_dispatch:    # 允许手动触发调试
+    - cron: '0 0 * * *'  # 北京时间每天上午 8 点
+  workflow_dispatch:      # 允许手动点击运行
 
 permissions:
-  contents: write       # 【关键】必须赋予写权限才能覆盖文件
+  contents: write         # 必须：赋予写入权限以覆盖文件
 
 jobs:
-  build:
+  update_rss:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0   # 获取完整历史，防止推送失败
+        fetch-depth: 0    # 获取全部历史，确保推送顺畅
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -27,20 +27,27 @@ jobs:
       run: |
         pip install requests beautifulsoup4 feedgen
 
-    - name: Run Python script
-      run: python fudan_rss.py  # 请确保这里是你 Python 脚本的文件名
+    - name: Run Scraper Scripts
+      run: |
+        python jwc_rss.py
+        python econ_rss.py
 
     - name: Commit and Push changes
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         
-        # 检查文件是否有变化
-        git add fudan_jwc.xml
+        # 1. 先尝试同步远程仓库，防止推送冲突
+        git pull origin main --rebase
+        
+        # 2. 强制添加生成的 XML 文件（这将覆盖本地索引中的旧版）
+        git add fudan_jwc.xml fudan_econ.xml
+        
+        # 3. 检查是否有变化
         if git diff --staged --quiet; then
-          echo "No changes to commit"
+          echo "内容未发生变化，无需更新。"
         else
-          # 如果有变化，则提交并覆盖
-          git commit -m "Update RSS: $(date +'%Y-%m-%d %H:%M:%S')"
+          # 4. 提交并推送到 main 分支
+          git commit -m "Auto-update RSS feeds (forced override): $(date +'%Y-%m-%d %H:%M:%S')"
           git push origin main
         fi
