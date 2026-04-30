@@ -1,7 +1,7 @@
 name: Update Fudan RSS Feeds
 
 on:
-  # 定时触发：北京时间每天上午 08:00 (UTC 00:00)
+  # 定时触发：北京时间每天
   schedule:
     - cron: '30 0 * * *'
   
