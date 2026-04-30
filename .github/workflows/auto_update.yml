@@ -3,7 +3,7 @@ name: Update Fudan RSS Feeds
 on:
   # 定时触发：北京时间每天上午 08:00 (UTC 00:00)
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '30 0 * * *'
   
   # 手动触发：允许在 Actions 页面点击 "Run workflow" 手动运行
   workflow_dispatch:
